@@ -14,14 +14,14 @@ import { Link } from "react-router-dom";
 
 export default function Sidebar() {
   const Navigation = () => (
-    <nav className="space-y-2">
+    <nav className="space-y-2 h-screen">
       <Button variant="ghost" className="w-full justify-start">
         <Home className="mr-2 h-4 w-4" />
         <Link to="/home">Home</Link>
       </Button>
       <Button variant="ghost" className="w-full justify-start">
         <FileText className="mr-2 h-4 w-4" />
-        <Link to="/creation">Create Contracts</Link>
+        <Link to="/create">Create Contracts</Link>
       </Button>
       <Button variant="ghost" className="w-full justify-start">
         <Upload className="mr-2 h-4 w-4" />
@@ -33,7 +33,7 @@ export default function Sidebar() {
   )
 
   return (
-    <>
+    <div className="h-screen sticky top-0">
       {/* Sidebar for large screens */}
       <aside className="hidden w-64 bg-white p-6 shadow-md lg:block">
         <h2 className="mb-6 text-2xl font-bold">Navigation</h2>
@@ -57,6 +57,6 @@ export default function Sidebar() {
           </div>
         </SheetContent>
       </Sheet>
-    </>
+    </div>
   )
 }
