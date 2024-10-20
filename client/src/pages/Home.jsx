@@ -68,7 +68,7 @@ export default function LegalCasesDashboard() {
   return (
     <div className="flex" >
       <Sidebar />
-      <div className="flex w-full min-h-screen bg-gray-100">
+      <div className="flex w-full min-h-screen bg-white">
       <main className="flex-1 p-6">
         <h1 className="text-3xl font-bold mb-6">Legal Cases Dashboard</h1>
         <div className="mb-6 flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">

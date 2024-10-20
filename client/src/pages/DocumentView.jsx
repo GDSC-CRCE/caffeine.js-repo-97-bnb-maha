@@ -8,6 +8,7 @@ import axios from 'axios';
 import { Bar, Line } from 'react-chartjs-2';
 import { Button } from "@/components/ui/button"
 import { MessageCircle } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, LineElement, PointElement } from 'chart.js';
 import ChatModal from './ChatModal'
@@ -188,14 +189,24 @@ export default function PDFUploadAndAnalysis() {
   return (
     <div className="flex min-h-screen">
       <Sidebar />
-      <div className="w-1/2 bg-gray-100 p-3 h-full">
+      <div className="w-1/2 bg-gray-100 p-3 h-full flex flex-col">
         {error && <p className="text-red-500">{error}</p>}
         {docs.length > 0 ? (
-          <DocViewer 
-            documents={docs} 
-            pluginRenderers={DocViewerRenderers}
-            style={{ width: '100%', height: '100vh', overflowY: 'auto' }} 
-          />
+          <>
+            <DocViewer 
+              documents={docs} 
+              pluginRenderers={DocViewerRenderers}
+              style={{ width: '100%', height: 'calc(100vh - 200px)', overflowY: 'auto' }} 
+            />
+            <Card className="mt-4">
+              <CardHeader>
+                <CardTitle>Document Summary</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-600">{location.state.summary}</p>
+              </CardContent>
+            </Card>
+          </>
         ) : (
           <p>No document loaded. Please upload a PDF first.</p>
         )}

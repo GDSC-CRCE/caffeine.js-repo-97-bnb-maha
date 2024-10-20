@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useCallback } from 'react'
 import { Viewer, Worker } from '@react-pdf-viewer/core'
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout'
 import SignatureCanvas from 'react-signature-canvas'
@@ -8,6 +8,7 @@ import { PDFDocument, rgb } from 'pdf-lib'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import Sidebar from './Sidebar'
+import { useDropzone } from 'react-dropzone'
 
 import '@react-pdf-viewer/core/lib/styles/index.css'
 import '@react-pdf-viewer/default-layout/lib/styles/index.css'
@@ -19,8 +20,8 @@ export default function PDFSigner() {
   const signatureRef = useRef()
   const defaultLayoutPluginInstance = defaultLayoutPlugin()
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0]
+  const onDrop = useCallback((acceptedFiles) => {
+    const file = acceptedFiles[0]
     if (file && file.type === 'application/pdf') {
       setPdfFile(file)
       const url = URL.createObjectURL(file)
@@ -28,7 +29,13 @@ export default function PDFSigner() {
     } else {
       alert('Please upload a valid PDF file')
     }
-  }
+  }, [])
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { 'application/pdf': ['.pdf'] },
+    multiple: false
+  })
 
   const handleClearSignature = () => {
     signatureRef.current.clear()
@@ -75,17 +82,18 @@ export default function PDFSigner() {
   return (
     <div className="flex min-h-screen">
       <Sidebar />
-      <div className="flex-grow">
-        <Card className="p-6 max-w-4xl mx-auto">
+      <div className="flex-grow flex justify-center items-center">
+        <Card className="p-6 max-w-4xl w-full">
           <h1 className="text-2xl font-bold mb-4">PDF E-Signature Tool</h1>
           <div className="mb-4">
-            <input 
-              type="file" 
-              accept=".pdf" 
-              onChange={handleFileChange} 
-              className="mb-2"
-              aria-label="Upload PDF file"
-            />
+            <div {...getRootProps()} className="border-2 border-dashed border-gray-300 rounded-lg p-6 cursor-pointer">
+              <input {...getInputProps()} />
+              {
+                isDragActive ?
+                  <p>Drop the PDF file here ...</p> :
+                  <p>Drag 'n' drop a PDF file here, or click to select a file</p>
+              }
+            </div>
             {pdfUrl && (
               <div style={{ height: '500px' }}>
                 <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">

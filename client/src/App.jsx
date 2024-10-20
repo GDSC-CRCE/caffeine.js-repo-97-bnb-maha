@@ -9,11 +9,13 @@ import DocView from "./pages/DocumentView";
 import DocumentUpload from "./pages/DocumentUpload";
 import PDFSigner from "./pages/PDFSigner";
 import Upload from "./pages/Upload";
+import Landing from "./pages/Landing";
+
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<div>Home Page</div>} />
+        <Route path="/" element={<Landing />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/home" element={<Home />} />
