@@ -3,9 +3,11 @@ import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import pdfplumber
 from collections import Counter
+from flask_cors import CORS  
 
 # Initialize Flask app
 app = Flask(__name__)
+CORS(app, supports_credentials=True)
 
 # Load Tokenizer and Models
 tokenizer = AutoTokenizer.from_pretrained("law-ai/InLegalBERT")
