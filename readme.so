@@ -1,6 +1,6 @@
-# Legal Document Analysis and OCR Tool
+#Legal Document Analysis and OCR Tool
 
-## Overview
+##Overview
 
 This project is a comprehensive legal document analysis and Optical Character Recognition (OCR) tool designed to streamline the process of analyzing legal texts and extracting information from various document formats. It combines a modern React-based frontend with a powerful Flask backend, leveraging advanced natural language processing models specifically trained for legal text analysis and document processing.
 
