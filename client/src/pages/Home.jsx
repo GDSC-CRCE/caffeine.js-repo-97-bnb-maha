@@ -1,42 +1,65 @@
-"use client"
+'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Search } from "lucide-react"
-import Sidebar from "./Sidebar" // Import the Sidebar component
-
-const legalCases = [
-  { title: "Smith vs. Johnson Medical Center", class: "Medical Records" },
-  { title: "TechCorp Patent Infringement", class: "Intellectual Property" },
-  { title: "Brown Family Custody Dispute", class: "Family Disputes/Laws" },
-  { title: "GreenEnergy Environmental Compliance", class: "Environmental Cases" },
-  { title: "State vs. Thompson", class: "Criminal Cases" },
-  { title: "ABC Corp Shareholder Agreement", class: "Corporate Governance" },
-  { title: "XYZ Company Merger MOU", class: "Memorandum of Understanding" },
-  { title: "Landlord-Tenant Dispute", class: "Agreements & Contracts" },
-]
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import axios from "axios"
+import Sidebar from "./Sidebar"
+import { Button } from "@/components/ui/button"
 
 export default function LegalCasesDashboard() {
+  const [cases, setCases] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
-  const [selectedClass, setSelectedClass] = useState("")
+  const [selectedClass, setSelectedClass] = useState("all")
+  const [similarCases, setSimilarCases] = useState([])
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/get-all")
+        setCases(response.data)
+      } catch (error) {
+        console.error("Error fetching cases:", error)
+      }
+    }
 
-  const filteredCases = legalCases.filter(
+    fetchData()
+  }, [])
+
+  const handleSimilarSearch = async () => {
+    try {
+      const response = await axios.post("http://localhost:8000/get-similar-cases", 
+        { summary: searchTerm },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      setSimilarCases(response.data);
+    } catch (error) {
+      console.error("Error fetching similar cases:", error);
+    }
+  }
+
+  const filteredCases = cases.filter(
     (legalCase) =>
       legalCase.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (selectedClass === "" || legalCase.class === selectedClass)
+      (selectedClass === "all" || selectedClass === "" || legalCase.classification === selectedClass)
   )
 
-  return (
-    <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar (Navigation and sheet included) */}
-      <Sidebar/>
+  const uniqueClassifications = [...new Set(cases.map(c => c.classification))]
 
+  return (
+    <div className="flex" >
+      <Sidebar />
+      <div className="flex w-full min-h-screen bg-gray-100">
       <main className="flex-1 p-6">
-        <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Legal Cases Dashboard</h1>
-        </div>
+        <h1 className="text-3xl font-bold mb-6">Legal Cases Dashboard</h1>
         <div className="mb-6 flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
-          <div className="relative flex-1">
+          <div className="relative flex flex-1">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
             <Input
               placeholder="Search cases..."
@@ -44,29 +67,39 @@ export default function LegalCasesDashboard() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
+            <Button className="ml-4" onClick={handleSimilarSearch}>
+              Find Similar Cases
+            </Button>
           </div>
-          <select
-            className="rounded-md border px-3 py-2"
-            value={selectedClass}
-            onChange={(e) => setSelectedClass(e.target.value)}
-          >
-            <option value="">All Classes</option>
-            {legalCases.map((legalClass) => (
-              <option key={legalClass.class} value={legalClass.class}>
-                {legalClass.class}
-              </option>
-            ))}
-          </select>
+          <Select value={selectedClass} onValueChange={setSelectedClass}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="All Classifications" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Classifications</SelectItem>
+              {uniqueClassifications.map((classification) => (
+                <SelectItem key={classification} value={classification}>
+                  {classification}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredCases.map((legalCase, index) => (
-            <div key={index} className="rounded-lg bg-white p-6 shadow-md">
-              <h3 className="mb-2 text-xl font-semibold">{legalCase.title}</h3>
-              <p className="text-sm text-gray-600">{legalCase.class}</p>
-            </div>
+          {(similarCases.length > 0 ? similarCases : filteredCases).map((legalCase) => (
+            <Card key={legalCase.id}>
+              <CardHeader>
+                <CardTitle>{legalCase.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm font-medium mb-2">{legalCase.classification}</p>
+                <p className="text-sm text-muted-foreground line-clamp-5">{legalCase.summary}</p>
+              </CardContent>
+            </Card>
           ))}
         </div>
       </main>
+    </div>
     </div>
   )
 }

@@ -3,9 +3,11 @@ import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import pdfplumber
 from collections import Counter
+from flask_cors import CORS , cross_origin 
 
 # Initialize Flask app
 app = Flask(__name__)
+CORS(app)
 
 # Load Tokenizer and Models
 tokenizer = AutoTokenizer.from_pretrained("law-ai/InLegalBERT")
@@ -42,6 +44,7 @@ def split_into_sentences(text):
     return [s.strip() for s in text.split('\n') if s.strip()]
 
 @app.route('/upload-pdf', methods=['POST'])
+@cross_origin(origin='*')
 def upload_pdf():
     file = request.files['pdf']
     text = extract_text_from_pdf(file)

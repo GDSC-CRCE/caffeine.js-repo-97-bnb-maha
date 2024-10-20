@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Create from "./pages/Create";
 import CreateForm from "./pages/CreateForm";
 import TextEditor from "./components/TextEditor";
+import Upload from "./pages/Upload";
 
 export default function App() {
   return (
@@ -12,10 +13,11 @@ export default function App() {
       <Routes>
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="/signin" element={<SignInPage />} />
-      <Route path="/home" element={<Home />} />
+      <Route path="/" element={<Home />} />
       <Route path="/create" element={<Create />} />
       <Route path="/create/createForm" element={<CreateForm />} />
       <Route path="/create/textEditor" element={<TextEditor />} />
+      <Route path="/upload" element={<Upload />} />
       </Routes>
     </BrowserRouter>
   );
