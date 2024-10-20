@@ -5,9 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Sidebar from "./Sidebar";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const RentalAgreementForm = () => {
   const [formData, setFormData] = useState({
+    form_id: 1,
     tenantName: "",
     tenantState: "",
     ownerName: "",
@@ -28,6 +31,8 @@ const RentalAgreementForm = () => {
     paymentDeadlineYear: "",
   });
 
+  const navigate = useNavigate();
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -36,10 +41,34 @@ const RentalAgreementForm = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    // Here you would typically send the data to a server or perform other actions
+    const mappedData = {
+        form_id: formData.form_id,
+        1: formData.tenantName,
+        2: formData.tenantState,
+        3: formData.ownerName,
+        4: formData.ownerState,
+        5: formData.witness1,
+        6: formData.witness2,
+        7: formData.signingTime,
+        8: formData.signingDate,
+        9: formData.signingMonth,
+        10: formData.landLocation,
+        11: formData.rentalContractYears,
+        12: formData.agreementStartMonth,
+        13: formData.agreementStartYear,
+        14: formData.monthlyRent,
+        15: formData.interestRate,
+        16: formData.landTax,
+        17: formData.paymentDeadlineMonths,
+        18: formData.paymentDeadlineYear
+    };    
+
+    console.log("Form submitted:", mappedData);
+    const response = await axios.post('http://localhost:5001/api/final-content', mappedData);
+    const content = response.data.content;
+    navigate('/create/textEditor', { state: { param: content } });
   };
 
   return (

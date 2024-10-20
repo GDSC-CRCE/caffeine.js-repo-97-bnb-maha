@@ -28,7 +28,7 @@ export default function Create() {
             <h1 className="text-3xl font-bold text-center mb-10">Legal Document Categories</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {ILSI_CLASSES.map((category) => (
-                <Link to="/createForm" key={category}>
+                <Link to="/create/createForm" key={category}>
                     <Card className="flex flex-col h-full transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-lg">
                         <CardHeader>
                         <CardTitle>{category}</CardTitle>
