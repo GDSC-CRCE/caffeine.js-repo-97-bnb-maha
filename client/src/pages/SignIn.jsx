@@ -3,7 +3,7 @@ import { SignIn } from "@clerk/clerk-react";
 const SignInPage = () => {
   return (
     <div className="flex justify-center items-center h-screen">
-      <SignIn forceRedirectUrl="/" />
+      <SignIn forceRedirectUrl="/home" />
     </div>
   );
 };

@@ -100,8 +100,7 @@ const Upload = () => {
           {/* Heading */}
           <h3 className="text-gray-700 text-3xl font-medium ml-5">Upload Documents</h3>
           <p className=' mt-6 ml-5 mb-5 text-justify text-gray-500'>
-            Please upload your documents for analysis. You can drag and drop files or click to select from your device.
-            <br /> Supported formats include Excel files, PDFs, and images.
+            Please upload your legal documents. You can drag and drop files or click to select from your device.
           </p>
 
           <div

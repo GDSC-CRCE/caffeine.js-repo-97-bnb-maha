@@ -7,9 +7,12 @@ import { jsPDF } from 'jspdf'
 import html2canvas from 'html2canvas'
 import { useLocation } from 'react-router-dom';
 import Sidebar from '@/pages/Sidebar'
+import axios from 'axios'
+
 export default function TextEditor() {
   const [versions, setVersions] = useState([{ id: 1, content: '', timestamp: new Date() }])
   const [currentVersionId, setCurrentVersionId] = useState(1)
+  const [clauses, setClauses] = useState([])
   const editorRef = useRef(null)
 
   const location = useLocation();
@@ -24,11 +27,16 @@ export default function TextEditor() {
       }
       setVersions([...versions, newVersion])
       setCurrentVersionId(newVersion.id)
+      generateClauses() // Call generateClauses after saving a new version
     }
   }
 
   const switchVersion = (versionId) => {
     setCurrentVersionId(versionId)
+    const selectedVersion = versions.find(v => v.id === versionId)
+    if (selectedVersion && editorRef.current) {
+      editorRef.current.innerHTML = selectedVersion.content
+    }
   }
 
   useEffect(() => {
@@ -54,6 +62,17 @@ export default function TextEditor() {
 
     fetchInitialContent()
   }, [])
+
+  const generateClauses = async () => {
+    try {
+      const content = editorRef.current.innerText;
+      const response = await axios.post('http://127.0.0.1:5001/generate-clauses', { content });
+      console.log(response.data)
+      setClauses(response.data.clauses);
+    } catch (error) {
+      console.error('Failed to generate clauses:', error);
+    }
+  }
 
   const applyStyle = (command, value) => {
     document.execCommand(command, false, value)
@@ -238,6 +257,7 @@ export default function TextEditor() {
         />
         <div className="flex gap-2 mt-4">
           <Button onClick={saveVersion}>Save Version</Button>
+          <Button onClick={generateClauses}>Generate Clauses</Button>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -279,6 +299,15 @@ export default function TextEditor() {
             >
               <h3 className="font-medium">Version {version.id}</h3>
               <p className="text-sm">{version.timestamp.toLocaleString()}</p>
+            </div>
+          ))}
+        </ScrollArea>
+        <h2 className="text-xl font-semibold mb-4 mt-6">Generated Clauses</h2>
+        <ScrollArea className="h-[calc(100vh-10rem)] md:h-[calc(100vh-8rem)]">
+          {clauses.map((clause, index) => (
+            <div key={index} className="mb-4">
+              <h3 className="font-medium">{clause.clause_title}</h3>
+              <p className="text-sm">{clause.description}</p>
             </div>
           ))}
         </ScrollArea>

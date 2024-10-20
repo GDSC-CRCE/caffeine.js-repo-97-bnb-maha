@@ -3,65 +3,81 @@
 import { useState } from 'react';
 import { Upload, FileText, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { useDropzone } from 'react-dropzone';
+import Sidebar from './Sidebar';
+import axios from 'axios';
 
 export default function DocumentUpload() {
   const [file, setFile] = useState(null);
   const [extractedText, setExtractedText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleFileChange = (event) => {
-    if (event.target.files && event.target.files[0]) {
-      setFile(event.target.files[0]);
+  const onDrop = (acceptedFiles) => {
+    if (acceptedFiles && acceptedFiles[0]) {
+      setFile(acceptedFiles[0]);
+      setError('');
     }
   };
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'image/*': [],
+      'application/pdf': ['.pdf']
+    },
+    multiple: false
+  });
 
   const handleUpload = async () => {
     if (!file) return;
 
     setIsLoading(true);
+    setError('');
     const formData = new FormData();
     formData.append('image', file);
 
     try {
-      // Replace with your actual API endpoint
-      const response = await fetch('http://localhost:5000/extract-text', {
-        method: 'POST',
-        body: formData,
-      });
+      const response = await axios.post('http://localhost:5002/extract-text', formData);
 
-      if (!response.ok) {
-        throw new Error('OCR processing failed');
-      }
-
-      const data = await response.json();
-      setExtractedText(data.extracted_text);
+      setExtractedText(response.data.extracted_text);
     } catch (error) {
       console.error('Error:', error);
-      setExtractedText('An error occurred while processing the image.');
+      if (error.message === 'Network Error') {
+        setError('Unable to connect to the server. Please check your internet connection and try again.');
+      } else if (error.response && error.response.data && error.response.data.error) {
+        setError(error.response.data.error);
+      } else {
+        setError('An error occurred while processing the file. Please try again.');
+      }
+      setExtractedText('');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="container mx-auto p-4 max-w-2xl">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold">Document OCR</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <Input
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                className="flex-grow"
-              />
-              <Button onClick={handleUpload} disabled={!file || isLoading}>
+    <div className="flex">
+      <Sidebar />
+      <div className="flex-1 p-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold">Document OCR</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div {...getRootProps()} className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer">
+                <input {...getInputProps()} />
+                {isDragActive ? (
+                  <p>Drop the file here ...</p>
+                ) : (
+                  <p>Drag 'n' drop an image or PDF file here, or click to select a file</p>
+                )}
+              </div>
+              {error && <p className="text-red-500">{error}</p>}
+              <Button onClick={handleUpload} disabled={!file || isLoading} className="w-full">
                 {isLoading ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
@@ -69,27 +85,27 @@ export default function DocumentUpload() {
                 )}
                 Upload
               </Button>
+              {extractedText && (
+                <Card className="mt-4">
+                  <CardHeader>
+                    <CardTitle className="text-xl font-semibold flex items-center">
+                      <FileText className="mr-2 h-5 w-5" />
+                      Extracted Text
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Textarea
+                      value={extractedText}
+                      readOnly
+                      className="min-h-[200px] text-sm"
+                    />
+                  </CardContent>
+                </Card>
+              )}
             </div>
-            {extractedText && (
-              <Card className="mt-4">
-                <CardHeader>
-                  <CardTitle className="text-xl font-semibold flex items-center">
-                    <FileText className="mr-2 h-5 w-5" />
-                    Extracted Text
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Textarea
-                    value={extractedText}
-                    readOnly
-                    className="min-h-[200px] text-sm"
-                  />
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

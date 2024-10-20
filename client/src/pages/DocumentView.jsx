@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
 import Sidebar from './Sidebar';
 import axios from 'axios';
@@ -17,49 +18,58 @@ export default function PDFUploadAndAnalysis() {
   const [docs, setDocs] = useState([]);
   const [output, setOutput] = useState(null);
   const [error, setError] = useState(null);
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
 
-  const handleFileUpload = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
+  useEffect(() => {
+    const fetchAndAnalyzePDF = async () => {
+      console.log(location.state);
+      if (location.state && location.state.url) {
+        try {
+          // Download the PDF
+          const response = await axios.get(location.state.url, { responseType: 'blob' });
+          const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+          const pdfFile = new File([pdfBlob], "document.pdf", { type: 'application/pdf' });
 
-    if (file.type !== 'application/pdf') {
-      setError('Please upload a valid PDF file.');
-      return;
-    }
-    
-    setError(null);
-    setOutput(null);
+          // Set the document for DocViewer
+          setDocs([{ uri: URL.createObjectURL(pdfFile), fileType: "pdf", fileName: "document.pdf" }]);
 
-    const formData = new FormData();
-    formData.append('pdf', file);
+          // Prepare form data for upload
+          const formData = new FormData();
+          formData.append('pdf', pdfFile);
 
-    try {
-      const response = await axios.post('http://localhost:5000/upload-pdf', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      const extractedText = response.data.text;
+          // Upload and analyze the PDF
+          const uploadResponse = await axios.post('http://localhost:5000/upload-pdf', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          });
 
-      const statuteAnalysis = await analyzeStatuteText(extractedText);
-      const ipcAnalysis = await analyzeIPCText(extractedText);
-      const segmentationAnalysis = await analyzeSemanticSegmentation(extractedText);
-      const judgmentAnalysis = await analyzeJudgmentPrediction(extractedText);
+          const extractedText = uploadResponse.data.text;
 
-      setOutput({
-        statuteAnalysis,
-        ipcAnalysis,
-        segmentationAnalysis,
-        judgmentAnalysis
-      });
+          // Perform various analyses
+          const statuteAnalysis = await analyzeStatuteText(extractedText);
+          const ipcAnalysis = await analyzeIPCText(extractedText);
+          const segmentationAnalysis = await analyzeSemanticSegmentation(extractedText);
+          const judgmentAnalysis = await analyzeJudgmentPrediction(extractedText);
 
-      const newDocs = [{ uri: URL.createObjectURL(file), fileType: "pdf", fileName: file.name }];
-      setDocs(newDocs);
+          setOutput({
+            statuteAnalysis,
+            ipcAnalysis,
+            segmentationAnalysis,
+            judgmentAnalysis
+          });
 
-    } catch (error) {
-      console.error('Error uploading file:', error);
-      setError('Error uploading file. Please try again.');
-    }
-  };
+        } catch (error) {
+          console.error('Error processing PDF:', error);
+          setError('Error processing PDF. Please try again.');
+        }
+      } else {
+        console.error('No PDF URL provided in location state');
+        setError('No PDF URL provided. Please upload a document first.');
+      }
+    };
+
+    fetchAndAnalyzePDF();
+  }, [location]);
 
   const analyzeStatuteText = async (text) => {
     try {
@@ -107,7 +117,7 @@ export default function PDFUploadAndAnalysis() {
     return (
       <div>
         <h3 className="font-semibold">Statute Identification:</h3>
-        <p>Highest Statute: {highestStatute[0]} - {highestStatute[1].toFixed(2)}</p>
+        <p>Highest Statute: {highestStatute[0]}</p>
       </div>
     );
   };
@@ -121,7 +131,7 @@ export default function PDFUploadAndAnalysis() {
         <h3 className="font-semibold">Top 3 IPC Sections:</h3>
         <ul className="list-disc pl-5">
           {top3IPC.map(([section, probability]) => (
-            <li key={section}>{section} - {probability.toFixed(2)}</li>
+            <li key={section}>{section}</li>
           ))}
         </ul>
       </div>
@@ -179,14 +189,15 @@ export default function PDFUploadAndAnalysis() {
     <div className="flex min-h-screen">
       <Sidebar />
       <div className="w-1/2 bg-gray-100 p-3 h-full">
-        <input type="file" accept="application/pdf" onChange={handleFileUpload} />
         {error && <p className="text-red-500">{error}</p>}
-        {docs.length > 0 && (
+        {docs.length > 0 ? (
           <DocViewer 
             documents={docs} 
             pluginRenderers={DocViewerRenderers}
             style={{ width: '100%', height: '100vh', overflowY: 'auto' }} 
           />
+        ) : (
+          <p>No document loaded. Please upload a PDF first.</p>
         )}
       </div>
 
@@ -200,7 +211,7 @@ export default function PDFUploadAndAnalysis() {
             {renderJudgmentPrediction()}
           </div>
         ) : (
-          <p className="mb-4">Upload a PDF to see the analysis results.</p>
+          <p className="mb-4">Loading analysis results...</p>
         )}
       </div>
       <>
@@ -212,7 +223,7 @@ export default function PDFUploadAndAnalysis() {
           <span className="sr-only">Open chat</span>
         </Button>
 
-        <ChatModal isOpen={isOpen} setIsOpen={setIsOpen} />
+        <ChatModal isOpen={isOpen} summary={location.state.summary} setIsOpen={setIsOpen} />
       </>
     </div>
   );

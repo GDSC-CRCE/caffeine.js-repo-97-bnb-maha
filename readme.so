@@ -1,0 +1,156 @@
+# Legal Document Analysis and OCR Tool
+
+## Overview
+
+This project is a comprehensive legal document analysis and Optical Character Recognition (OCR) tool designed to streamline the process of analyzing legal texts and extracting information from various document formats. It combines a modern React-based frontend with a powerful Flask backend, leveraging advanced natural language processing models specifically trained for legal text analysis and document processing.
+
+## Features
+
+1. **Document Upload and Processing**:
+   - Support for PDF documents and image files
+   - Secure file handling and processing
+   - Real-time progress feedback during upload and processing
+
+2. **Advanced OCR Capabilities**:
+   - Extracts text from uploaded images with high accuracy
+   - Handles various image formats and qualities
+   - Preserves document structure and formatting where possible
+
+3. **Sophisticated Legal Text Analysis**:
+   Utilizes the state-of-the-art InLegalBERT model for multiple legal text classification tasks:
+   - **Statute Identification**: Recognizes and categorizes legal statutes within the text
+   - **Legal Issue Spotting**: Identifies key legal issues and topics in documents
+   - **Indian Legal Document Classification**: Categorizes documents into predefined legal classes
+   - **Indian Penal Code Section Classification**: Identifies relevant IPC sections in legal texts
+
+4. **Interactive and User-Friendly Interface**:
+   - Intuitive document upload mechanism
+   - Real-time display of extracted text
+   - Interactive presentation of analysis results
+   - Responsive design for various device sizes
+
+5. **Secure and Efficient Backend Processing**:
+   - Flask-based API for handling document processing requests
+   - Efficient text extraction and analysis pipeline
+   - Cross-Origin Resource Sharing (CORS) enabled for secure frontend-backend communication
+
+## Technology Stack
+
+### Frontend
+- **React.js**: A modern JavaScript library for building user interfaces
+- **React Router**: For seamless navigation within the application
+- **Tailwind CSS**: For responsive and customizable styling
+- **Shadcn UI Components**: Pre-built, customizable UI components for a polished look
+
+### Backend
+- **Flask**: A lightweight WSGI web application framework in Python
+- **Flask-CORS**: For handling Cross-Origin Resource Sharing (CORS)
+- **pdfplumber**: For efficient PDF text extraction
+- **Hugging Face Transformers**: Utilizing the InLegalBERT model for advanced NLP tasks
+
+### NLP and Machine Learning
+- **PyTorch**: For running the InLegalBERT model
+- **Transformers Library**: For accessing and utilizing pre-trained NLP models
+
+### OCR
+- Custom OCR implementation (specific library not detailed in the provided code)
+
+## Detailed Setup and Installation
+
+1. **Clone the Repository**:
+   ```
+   git clone [repository-url]
+   cd caffeine.js-repo-97-bnb-maha
+   ```
+
+2. **Frontend Setup**:
+   ```
+   cd client
+   npm install
+   npm start
+   ```
+   This will start the development server, typically on `http://localhost:3000`.
+
+3. **Backend Setup**:
+   ```
+   cd server/python
+   python -m venv venv
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   pip install -r requirements.txt
+   ```
+
+4. **Starting the Backend Server**:
+   ```
+   python app.py
+   ```
+   The Flask server will start, usually on `http://localhost:5000`.
+
+5. **Environment Configuration**:
+   - Set up any necessary environment variables for API keys, database connections, etc.
+   - Ensure proper CORS settings in the Flask app for local development
+
+## Detailed Usage Guide
+
+1. **Accessing the Application**:
+   - Open a web browser and navigate to the frontend URL (e.g., `http://localhost:3000`)
+
+2. **Document Upload**:
+   - Click on the 'Upload' button in the navigation
+   - Select a PDF document or image file from your local system
+   - The file will be uploaded and processed automatically
+
+3. **OCR Processing** (for image uploads):
+   - The system will perform OCR to extract text from the image
+   - Extracted text will be displayed in the interface for review
+
+4. **Legal Text Analysis**:
+   - Once text is extracted (either from PDF or via OCR), you can perform various analyses:
+     - Use the 'Statute Identification' feature to identify relevant statutes
+     - Employ 'Legal Issue Spotting' to highlight key legal issues
+     - Utilize 'Document Classification' for categorizing the legal document
+     - Apply 'IPC Section Classification' for relevant Indian Penal Code sections
+
+5. **Viewing Results**:
+   - Analysis results will be displayed in an easy-to-read format
+   - You can copy, save, or further process the results as needed
+
+## Project Structure
+
+- `/client`: React frontend application
+  - `/src`: Source files for React components
+  - `/public`: Public assets and index.html
+- `/server/python`: Flask backend
+  - `/bert`: Main Flask application and NLP models
+    - `test.py`: Core server logic and API endpoints
+  - `/ocr`: OCR processing module
+  - `/Opennyai`: Additional AI components (details not provided in the code snippets)
+
+## Contributing
+
+We welcome contributions to improve this legal document analysis tool. Please follow these steps:
+
+1. Fork the repository
+2. Create a new branch (`git checkout -b feature/AmazingFeature`)
+3. Make your changes
+4. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+5. Push to the branch (`git push origin feature/AmazingFeature`)
+6. Open a Pull Request
+
+Please ensure your code adheres to the project's coding standards and include appropriate tests for new features.
+
+## License
+
+[Specify the license here, e.g., MIT License, Apache License 2.0, etc.]
+
+## Contact and Support
+
+For questions, feature requests, or support, please contact:
+
+[Your Name or Team Name]
+Email: [contact email]
+GitHub: [GitHub profile or organization link]
+
+## Acknowledgments
+
+- Thanks to the creators of InLegalBERT for the powerful NLP model
+- Appreciation to the open-source community for various libraries and tools used in this project

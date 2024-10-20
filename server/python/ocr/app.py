@@ -1,11 +1,11 @@
 from flask import Flask, request, jsonify
 import easyocr
-from flask_cors import CORS  # Import CORS
+from flask_cors import CORS
 from PIL import Image
 import io
 
 app = Flask(__name__)
-CORS(app) 
+CORS(app, resources={r"/*": {"origins": "*"}})  # Enable CORS for all routes and origins
 
 # Initialize EasyOCR reader
 reader = easyocr.Reader(['en'])  # Specify the language(s)
@@ -37,4 +37,4 @@ def extract_text():
     return jsonify({'extracted_text': extracted_text}), 200
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5002)

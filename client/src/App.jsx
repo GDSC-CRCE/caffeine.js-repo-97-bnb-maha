@@ -7,7 +7,8 @@ import CreateForm from "./pages/CreateForm";
 import TextEditor from "./components/TextEditor";
 import DocView from "./pages/DocumentView";
 import DocumentUpload from "./pages/DocumentUpload";
-
+import PDFSigner from "./pages/PDFSigner";
+import Upload from "./pages/Upload";
 export default function App() {
   return (
     <BrowserRouter>
@@ -21,7 +22,8 @@ export default function App() {
         <Route path="/create/createForm" element={<CreateForm />} />
         <Route path="/create/textEditor" element={<TextEditor />} />
         <Route path="/documentUpload" element={<DocumentUpload/>}/>
-
+        <Route path="/pdfsigner" element={<PDFSigner />}/>
+        <Route path="/upload" element={<Upload />}/>
       </Routes>
     </BrowserRouter>
   );

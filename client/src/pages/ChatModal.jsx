@@ -12,7 +12,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Send } from "lucide-react"
 import { generateDescription } from '../utils/chatb' 
 
-export default function ChatModal({ isOpen, setIsOpen }) {
+export default function ChatModal({ isOpen, setIsOpen, summary }) {
   const [messages, setMessages] = useState([
     { text: "Hello! How can I assist you today?", sender: 'bot' },
   ])
@@ -29,7 +29,7 @@ export default function ChatModal({ isOpen, setIsOpen }) {
     setLoading(true)
 
     try {
-      const documentSummary = `${summary}`;
+      const documentSummary = summary;
 
       const aiResponse = await generateDescription(userMessage, documentSummary)
 

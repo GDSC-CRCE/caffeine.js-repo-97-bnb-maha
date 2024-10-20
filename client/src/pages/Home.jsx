@@ -8,12 +8,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import axios from "axios"
 import Sidebar from "./Sidebar"
 import { Button } from "@/components/ui/button"
+import { Link, useNavigate } from "react-router-dom"
 
 export default function LegalCasesDashboard() {
   const [cases, setCases] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedClass, setSelectedClass] = useState("all")
   const [similarCases, setSimilarCases] = useState([])
+  const navigate = useNavigate();
   
   useEffect(() => {
     const fetchData = async () => {
@@ -52,6 +54,17 @@ export default function LegalCasesDashboard() {
 
   const uniqueClassifications = [...new Set(cases.map(c => c.classification))]
 
+  const handleCardClick = (legalCase) => {
+    navigate('/docview', {
+      state: {
+        title: legalCase.title,
+        classification: legalCase.classification,
+        summary: legalCase.summary,
+        url: legalCase.pdf_link
+      }
+    });
+  }
+
   return (
     <div className="flex" >
       <Sidebar />
@@ -87,15 +100,21 @@ export default function LegalCasesDashboard() {
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {(similarCases.length > 0 ? similarCases : filteredCases).map((legalCase) => (
-            <Card key={legalCase.id}>
-              <CardHeader>
-                <CardTitle>{legalCase.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm font-medium mb-2">{legalCase.classification}</p>
-                <p className="text-sm text-muted-foreground line-clamp-5">{legalCase.summary}</p>
-              </CardContent>
-            </Card>
+            <div 
+              onClick={() => handleCardClick(legalCase)}
+              key={legalCase.id}
+              className="transition-transform duration-200 ease-in-out hover:scale-105 cursor-pointer"
+            >
+              <Card className="h-full">
+                <CardHeader>
+                  <CardTitle>{legalCase.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm font-medium mb-2">{legalCase.classification}</p>
+                  <p className="text-sm text-muted-foreground line-clamp-5">{legalCase.summary}</p>
+                </CardContent>
+              </Card>
+            </div>
           ))}
         </div>
       </main>
