@@ -1,4 +1,4 @@
-# AI-Powered Legal Document Management System
+# LegalAI - AI-Powered Legal Document Management System
 
 ## Overview
 
