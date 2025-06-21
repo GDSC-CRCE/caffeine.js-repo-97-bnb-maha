@@ -2,7 +2,7 @@
 
 ## Overview
 
-The **AI-Powered Legal Document Management System** is a comprehensive platform designed for efficient creation, editing, and management of legal documents. It supports document upload, updates, and retrieval through advanced vector embedding technology, making it easier to organize and search large volumes of legal texts. The system integrates features like Optical Character Recognition (OCR) and Natural Language Processing (NLP) for enhanced legal text analysis, alongside capabilities for secure digital signatures on documents. Additionally, the platform includes a chatbot feature that can answer queries related to specific legal documents, providing an interactive way to navigate and understand legal content.
+The **AI-Powered Legal Document Management System** is a comprehensive platform designed for efficient creation, editing, and management of legal documents. It supports document upload, updates, and retrieval through advanced vector embedding technology, making it easier to organize and search large volumes of legal texts. The system integrates features like Optical Character Recognition (OCR) and Natural Language Processing (NLP) for enhanced legal text analysis, alongside capabilities for secure digital signatures on documents. Additionally, the platform includes a chatbot feature that can answer queries related to specific legal documents, providing an interactive way to navigate and understand legal content.<br>
 [LegalAI Demo](https://drive.google.com/file/d/14qplhcrKfvGkcLbskvwmhFbVYqw3gCLK/view?usp=sharing)
 
 ## Features
